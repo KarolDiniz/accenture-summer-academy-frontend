@@ -4,7 +4,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 import Logo from "@img/store-logo-menu.png";
-import products from "@img/box_6452366.png";
+import products from "@img/produtos.png";
+import clients from "@img/privacidade.png";
+import orders from "@img/box_6452366.png";
+
 import home from "@img/store_6452554.png";
 import like from "@img/like_6452430.png";
 import notificacaoIcone from "@img/notificacao-icone.png";
@@ -85,9 +88,9 @@ const Menu = () => {
         }}
       >
         <MenuItem to={"/Home"} icon={home} label={"HOME"} />
-        <MenuItem to={"/clientes"} icon={products} label={"CUSTOMERS"} />
+        <MenuItem to={"/clientes"} icon={clients} label={"CUSTOMERS"} />
         <MenuItem to={"/produtos"} icon={products} label={"ITEMS"} />
-        <MenuItem to={"/pedidos"} icon={products} label={"ORDER"} />
+        <MenuItem to={"/pedidos"} icon={orders} label={"ORDER"} />
         <MenuItem to={"/project"} icon={like} label={"CHAT"} />
 
       </Box>

@@ -261,7 +261,7 @@ const Product = () => {
                             <img
                               src="src/assets/img/package-box_6046583.png"
                               alt={product.name}
-                              style={{ maxWidth: "100%", maxHeight: "100%" }}
+                              style={{ maxWidth: "50%", maxHeight: "50%" }}
                             />
                           </div>
                           <Typography variant="body2" style={{ marginTop: "1rem" }}>
