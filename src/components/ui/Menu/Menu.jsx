@@ -85,10 +85,10 @@ const Menu = () => {
         }}
       >
         <MenuItem to={"/Home"} icon={home} label={"HOME"} />
-        <MenuItem to={"/clientes"} icon={products} label={"CLIENTES"} />
-        <MenuItem to={"/produtos"} icon={products} label={"PRODUTOS"} />
-        <MenuItem to={"/pedidos"} icon={products} label={"PEDIDOS"} />
-        <MenuItem to={"/project"} icon={like} label={"PROJETO"} />
+        <MenuItem to={"/clientes"} icon={products} label={"CUSTOMERS"} />
+        <MenuItem to={"/produtos"} icon={products} label={"ITEMS"} />
+        <MenuItem to={"/pedidos"} icon={products} label={"ORDER"} />
+        <MenuItem to={"/project"} icon={like} label={"CHAT"} />
 
       </Box>
       <Box

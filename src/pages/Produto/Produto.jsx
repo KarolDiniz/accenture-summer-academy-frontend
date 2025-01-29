@@ -14,16 +14,16 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 
-const Produto = () => {
-  const [produtos, setProdutos] = useState([]);
-  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
-  const [isModalDetalhesAberto, setIsModalDetalhesAberto] = useState(false);
-  const [isModalCriarAberto, setIsModalCriarAberto] = useState(false);
-  const [isModalEditarAberto, setIsModalEditarAberto] = useState(false);
-  const [valorFiltro, setValorFiltro] = useState("");
-  const [isCarregando, setIsCarregando] = useState(true);
-  const [indiceHovered, setIndiceHovered] = useState(null);
-  const [novoProduto, setNovoProduto] = useState({
+const Product = () => {
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [filterValue, setFilterValue] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [newProduct, setNewProduct] = useState({
     name: "",
     sku: "",
     description: "",
@@ -32,133 +32,134 @@ const Produto = () => {
   });
 
   useEffect(() => {
-    const buscarProdutos = async () => {
+    const fetchProducts = async () => {
       try {
         const response = await fetch("http://localhost:8083/api/products");
         const data = await response.json();
-        setProdutos(data);
-        setIsCarregando(false);
+        setProducts(data);
+        setIsLoading(false);
       } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-        setIsCarregando(false);
+        console.error("Error fetching products:", error);
+        setIsLoading(false);
       }
     };
 
-    buscarProdutos();
+    fetchProducts();
   }, []);
 
-  const handleClickLinha = (produto) => {
-    setProdutoSelecionado(produto);
-    setIsModalDetalhesAberto(true);
+  const handleRowClick = (product) => {
+    setSelectedProduct(product);
+    setIsDetailsModalOpen(true);
   };
 
-  const handleFecharModalDetalhes = () => {
-    setIsModalDetalhesAberto(false);
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalOpen(false);
   };
 
-  const handleFecharModalCriar = () => {
-    setIsModalCriarAberto(false);
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
   };
 
-  const handleAlterarFiltro = (event) => {
-    setValorFiltro(event.target.value);
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value);
   };
 
-  const handleRemoverProduto = async () => {
-    if (!produtoSelecionado) return;
+  const handleRemoveProduct = async () => {
+    if (!selectedProduct) return;
   
     try {
-      const response = await fetch(`http://localhost:8083/api/products/${produtoSelecionado.id}`, {
+      const response = await fetch(`http://localhost:8083/api/products/${selectedProduct.id}`, {
         method: "DELETE",
       });
   
       if (response.ok) {
-        setProdutos((produtosAnteriores) =>
-          produtosAnteriores.filter((produto) => produto.id !== produtoSelecionado.id)
+        setProducts((previousProducts) =>
+          previousProducts.filter((product) => product.id !== selectedProduct.id)
         );
-        alert("Produto removido com sucesso!");
+        alert("Product removed successfully!");
       } else {
-        alert("Erro ao remover o produto. Tente novamente.");
+        alert("Error removing the product. Please try again.");
       }
     } catch (error) {
-      console.error("Erro ao remover produto:", error);
-      alert("Erro ao se comunicar com o servidor. Verifique a conexão.");
+      console.error("Error removing product:", error);
+      alert("Error communicating with the server. Check the connection.");
     } finally {
-      handleFecharModalDetalhes();
+      handleCloseDetailsModal();
     }
   };
 
   const handleCardMouseEnter = (index) => {
-    setIndiceHovered(index);
+    setHoveredIndex(index);
   };
 
   const handleCardMouseLeave = () => {
-    setIndiceHovered(null);
+    setHoveredIndex(null);
   };
 
-  const produtosFiltrados = produtos.filter((produto) =>
-    (produto.name || "").toLowerCase().includes(valorFiltro.toLowerCase())
+  const filteredProducts = products.filter((product) =>
+    (product.name || "").toLowerCase().includes(filterValue.toLowerCase())
   );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNovoProduto({
-      ...novoProduto,
+    setNewProduct({
+      ...newProduct,
       [name]: value,
     });
   };
 
-  const handleCriarProduto = async () => {
+  const handleCreateProduct = async () => {
     const response = await fetch("http://localhost:8083/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(novoProduto),
+      body: JSON.stringify(newProduct),
     });
   
     if (response.ok) {
-      const produtoCriado = await response.json();
-      setProdutos((produtosAnteriores) => [...produtosAnteriores, produtoCriado]);
-      setNovoProduto({
+      const createdProduct = await response.json();
+      setProducts((previousProducts) => [...previousProducts, createdProduct]);
+      setNewProduct({
         name: "",
         sku: "",
         description: "",
         price: "",
         stockQuantity: "",
       });
-      alert("Produto criado com sucesso!");
-      handleFecharModalCriar();
+      alert("Product created successfully!");
+      handleCloseCreateModal();
     } else {
-      alert("Falha ao criar produto.");
+      alert("Failed to create product.");
     }
   };
-  const handleEditarProduto = (produto) => {
-    setNovoProduto(produto);
-    setIsModalEditarAberto(true);
-    setIsModalDetalhesAberto(false);
+
+  const handleEditProduct = (product) => {
+    setNewProduct(product);
+    setIsEditModalOpen(true);
+    setIsDetailsModalOpen(false);
   };
 
-  const handleSalvarEdicaoProduto = async () => {
-    const response = await fetch(`http://localhost:8083/api/products/${novoProduto.id}`, {
+  const handleSaveEditProduct = async () => {
+    const response = await fetch(`http://localhost:8083/api/products/${newProduct.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(novoProduto),
+      body: JSON.stringify(newProduct),
     });
 
     if (response.ok) {
-      const produtoAtualizado = await response.json();
-      setProdutos((produtosAnteriores) =>
-        produtosAnteriores.map((produto) =>
-          produto.id === produtoAtualizado.id ? produtoAtualizado : produto
+      const updatedProduct = await response.json();
+      setProducts((previousProducts) =>
+        previousProducts.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
         )
       );
-      alert("Produto atualizado com sucesso!");
-      setIsModalEditarAberto(false);
+      alert("Product updated successfully!");
+      setIsEditModalOpen(false);
     } else {
-      alert("Falha ao atualizar o produto.");
+      alert("Failed to update the product.");
     }
   };
 
@@ -167,10 +168,10 @@ const Produto = () => {
       <Grid item xs={12} mt={-5} ml={-0.5}>
         <Menu />
         <TextField
-          label="Filtrar por Nome"
+          label="Filter by Name"
           variant="outlined"
-          value={valorFiltro}
-          onChange={handleAlterarFiltro}
+          value={filterValue}
+          onChange={handleFilterChange}
           style={{
             marginBottom: "16px",
             marginLeft: "11.5rem", 
@@ -180,26 +181,26 @@ const Produto = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setIsModalCriarAberto(true)} 
+            onClick={() => setIsCreateModalOpen(true)} 
             sx={{
               backgroundColor: "#6157bb", 
               "&:hover": { backgroundColor: "#8889b1" }, 
               marginTop: "-5rem",
             }}
           >
-            <AddIcon sx={{ marginRight: "8px" }} /> Criar Produto
+            <AddIcon sx={{ marginRight: "8px" }} /> Create Product
           </Button>
         </Grid>
       </Grid>
 
-      {isCarregando ? (
+      {isLoading ? (
         <div style={{ textAlign: "center", marginTop: "10rem" }}>
           <Typography variant="h4" style={{ marginBottom: "10px" }}>
-            Carregando...
+            Loading...
           </Typography>
           <CircularProgress />
         </div>
-      ) : produtosFiltrados.length === 0 ? (
+      ) : filteredProducts.length === 0 ? (
         <Typography
           variant="h5"
           style={{
@@ -209,8 +210,8 @@ const Produto = () => {
             color: "#6357F1",
           }}
         >
-          Não há produtos disponíveis. <br /> 
-          Cadastre um novo produto!
+          No products available. <br /> 
+          Register a new product!
         </Typography>
       ) : (
         <Paper
@@ -221,8 +222,8 @@ const Produto = () => {
           }}
         >
           <Grid container spacing={5} justifyContent="center" alignItems="center">
-            {produtosFiltrados.map((produto, index) => (
-              <Grid key={produto.id} item xs={12} lg={3}>
+            {filteredProducts.map((product, index) => (
+              <Grid key={product.id} item xs={12} lg={3}>
                 <Paper
                   onMouseEnter={() => handleCardMouseEnter(index)}
                   onMouseLeave={handleCardMouseLeave}
@@ -231,8 +232,8 @@ const Produto = () => {
                     backgroundColor: "#edecf5",
                     transition:
                       "transform 0.3s ease-in-out, background-color 0.3s, color 0.3s",
-                    transform: indiceHovered === index ? "scale(1.15)" : "scale(1)",
-                    color: indiceHovered === index ? "#000" : "#6357F1",
+                    transform: hoveredIndex === index ? "scale(1.15)" : "scale(1)",
+                    color: hoveredIndex === index ? "#000" : "#6357F1",
                   }}
                 >
                   <TableContainer>
@@ -240,7 +241,7 @@ const Produto = () => {
                       <TableHead>
                         <TableRow></TableRow>
                       </TableHead>
-                      <TableRow onClick={() => handleClickLinha(produto)}>
+                      <TableRow onClick={() => handleRowClick(product)}>
                         <TableCell
                           style={{
                             color: "#6357F1",
@@ -248,7 +249,7 @@ const Produto = () => {
                           }}
                         >
                           <Typography variant="body2" style={{ fontWeight: "bold" }}>
-                            {produto.name}
+                            {product.name}
                           </Typography>
                           <div
                             style={{
@@ -259,18 +260,18 @@ const Produto = () => {
                           >
                             <img
                               src="src/assets/img/package-box_6046583.png"
-                              alt={produto.name}
+                              alt={product.name}
                               style={{ maxWidth: "100%", maxHeight: "100%" }}
                             />
                           </div>
                           <Typography variant="body2" style={{ marginTop: "1rem" }}>
-                            <strong>SKU:</strong> {produto.sku}
+                            <strong>SKU:</strong> {product.sku}
                           </Typography>
                           <Typography variant="body2" style={{ marginTop: "1rem" }}>
-                            <strong>Preço:</strong> R$ {produto.price}
+                            <strong>Price:</strong> R$ {product.price}
                           </Typography>
                           <Typography variant="body2" style={{ marginTop: "1rem" }}>
-                            <strong>Estoque:</strong> {produto.stockQuantity}
+                            <strong>Stock:</strong> {product.stockQuantity}
                           </Typography>
                         </TableCell>
                       </TableRow>
@@ -283,7 +284,7 @@ const Produto = () => {
         </Paper>
       )}
 
-      <Modal open={isModalDetalhesAberto} onClose={handleFecharModalDetalhes}>
+      <Modal open={isDetailsModalOpen} onClose={handleCloseDetailsModal}>
         <Paper
           style={{
             position: "absolute",
@@ -298,28 +299,28 @@ const Produto = () => {
             variant="h5"
             style={{ textAlign: "center", marginBottom: "2rem", fontWeight: "bold" }}
           >
-            Detalhes do Produto
+            Product Details
           </Typography>
-          {produtoSelecionado && (
+          {selectedProduct && (
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>ID</TableCell>
-                    <TableCell>Nome</TableCell>
+                    <TableCell>Name</TableCell>
                     <TableCell>SKU</TableCell>
-                    <TableCell>Descrição</TableCell>
-                    <TableCell>Preço</TableCell>
-                    <TableCell>Estoque</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Stock</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableRow>
-                  <TableCell>{produtoSelecionado.id}</TableCell>
-                  <TableCell>{produtoSelecionado.name}</TableCell>
-                  <TableCell>{produtoSelecionado.sku}</TableCell>
-                  <TableCell>{produtoSelecionado.description}</TableCell>
-                  <TableCell>R$ {produtoSelecionado.price}</TableCell>
-                  <TableCell>{produtoSelecionado.stockQuantity}</TableCell>
+                  <TableCell>{selectedProduct.id}</TableCell>
+                  <TableCell>{selectedProduct.name}</TableCell>
+                  <TableCell>{selectedProduct.sku}</TableCell>
+                  <TableCell>{selectedProduct.description}</TableCell>
+                  <TableCell>R$ {selectedProduct.price}</TableCell>
+                  <TableCell>{selectedProduct.stockQuantity}</TableCell>
                 </TableRow>
               </Table>
             </TableContainer>
@@ -327,14 +328,14 @@ const Produto = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleFecharModalDetalhes}
+            onClick={handleCloseDetailsModal}
             style={{ marginTop: "1rem" }}
           >
-            Fechar
+            Close
           </Button>
           <Button
             variant="outlined"
-            onClick={handleRemoverProduto}
+            onClick={handleRemoveProduct}
             style={{
               marginTop: "1rem",
               color: "#ff0000",
@@ -342,22 +343,22 @@ const Produto = () => {
               marginLeft: "20rem",
             }}
           >
-            Remover
+            Remove
           </Button>
           <Button
             variant="outlined"
-            onClick={() => handleEditarProduto(produtoSelecionado)}
+            onClick={() => handleEditProduct(selectedProduct)}
             style={{
               marginTop: "1rem",
               marginLeft: "1rem",
             }}
           >
-            Editar
+            Edit
           </Button>
         </Paper>
       </Modal>
 
-      <Modal open={isModalEditarAberto} onClose={() => setIsModalEditarAberto(false)}>
+      <Modal open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <Paper
           style={{
             position: "absolute",
@@ -372,13 +373,13 @@ const Produto = () => {
             variant="h5"
             style={{ marginBottom: "1rem", fontWeight: "bold" }}
           >
-            Editar Produto
+            Edit Product
           </Typography>
           <TextField
-            label="Nome do Produto"
+            label="Product Name"
             variant="outlined"
             name="name"
-            value={novoProduto.name}
+            value={newProduct.name}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
@@ -387,36 +388,36 @@ const Produto = () => {
             label="SKU"
             variant="outlined"
             name="sku"
-            value={novoProduto.sku}
+            value={newProduct.sku}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
           />
           <TextField
-            label="Descrição"
+            label="Description"
             variant="outlined"
             name="description"
-            value={novoProduto.description}
+            value={newProduct.description}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
           />
           <TextField
-            label="Preço"
+            label="Price"
             variant="outlined"
             name="price"
             type="number"
-            value={novoProduto.price}
+            value={newProduct.price}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
           />
           <TextField
-            label="Quantidade em Estoque"
+            label="Stock Quantity"
             variant="outlined"
             name="stockQuantity"
             type="number"
-            value={novoProduto.stockQuantity}
+            value={newProduct.stockQuantity}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
@@ -424,22 +425,22 @@ const Produto = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSalvarEdicaoProduto}
+            onClick={handleSaveEditProduct}
             fullWidth
           >
-            Salvar Alterações
+            Save Changes
           </Button>
           <Button
             variant="outlined"
-            onClick={() => setIsModalEditarAberto(false)}
+            onClick={() => setIsEditModalOpen(false)}
             style={{ marginTop: "1rem", width: "100%" }}
           >
-            Cancelar
+            Cancel
           </Button>
         </Paper>
       </Modal>
 
-      <Modal open={isModalCriarAberto} onClose={handleFecharModalCriar}>
+      <Modal open={isCreateModalOpen} onClose={handleCloseCreateModal}>
         <Paper
           style={{
             position: "absolute",
@@ -453,14 +454,14 @@ const Produto = () => {
           <Typography
             variant="h5"
             style={{ marginBottom: "1rem", fontWeight: "bold" }}
-            >
-            Criar Produto
+          >
+            Create Product
           </Typography>
           <TextField
-            label="Nome do Produto"
+            label="Product Name"
             variant="outlined"
             name="name"
-            value={novoProduto.name}
+            value={newProduct.name}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
@@ -469,36 +470,36 @@ const Produto = () => {
             label="SKU"
             variant="outlined"
             name="sku"
-            value={novoProduto.sku}
+            value={newProduct.sku}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
           />
           <TextField
-            label="Descrição"
+            label="Description"
             variant="outlined"
             name="description"
-            value={novoProduto.description}
+            value={newProduct.description}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
           />
           <TextField
-            label="Preço"
+            label="Price"
             variant="outlined"
             name="price"
             type="number"
-            value={novoProduto.price}
+            value={newProduct.price}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
           />
           <TextField
-            label="Quantidade em Estoque"
+            label="Stock Quantity"
             variant="outlined"
             name="stockQuantity"
             type="number"
-            value={novoProduto.stockQuantity}
+            value={newProduct.stockQuantity}
             onChange={handleInputChange}
             fullWidth
             style={{ marginBottom: "1rem" }}
@@ -506,17 +507,17 @@ const Produto = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleCriarProduto}
+            onClick={handleCreateProduct}
             fullWidth
           >
-            Criar
+            Create
           </Button>
           <Button
             variant="outlined"
-            onClick={handleFecharModalCriar}
+            onClick={handleCloseCreateModal}
             style={{ marginTop: "1rem", width: "100%" }}
           >
-            Cancelar
+            Cancel
           </Button>
         </Paper>
       </Modal>
@@ -524,4 +525,4 @@ const Produto = () => {
   );
 };
 
-export default Produto;
+export default Product;
