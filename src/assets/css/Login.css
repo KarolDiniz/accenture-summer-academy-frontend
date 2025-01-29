@@ -1,0 +1,40 @@
+/* Login.css */
+
+body {
+  display: flex;
+  margin: 0;
+  background-color: #ffffff;
+  height: 100%;
+  width: 100%;
+}
+
+.login-container {
+  height: 100%;
+  width: 100%;
+}
+
+.side-image {
+  width: 730px;
+  margin-top: -220px;
+}
+
+.login-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  width: 400px;
+  margin-bottom: 20px;
+  margin-left: 950px;
+  margin-top: 30px;
+}
+
+h1 {
+  font-size: 32px;
+  color: #2d8feb;
+  margin-left: 950px;
+  margin-top: -140px;
+}
