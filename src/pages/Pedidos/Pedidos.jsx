@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Menu } from "@ui/Menu";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -18,9 +18,11 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { Snackbar, FormControl, InputLabel } from "@mui/material";
 import { CheckCircle, Error } from "@mui/icons-material";
 import { Select, MenuItem } from "@mui/material";
+import { jsPDF } from "jspdf";
 
 const Pedidos = () => {
   const [orders, setOrders] = useState([]);
@@ -110,12 +112,10 @@ const Pedidos = () => {
 
   const handleCreateOrder = async () => {
     try {
-      // Validate form
       if (!validateOrder(newOrder)) {
         return;
       }
 
-      // Calculate total amount
       const orderToSend = {
         ...newOrder,
         totalAmount: calculateTotalAmount(newOrder.items),
@@ -154,7 +154,6 @@ const Pedidos = () => {
       setSnackbarType("success");
       setSnackbarOpen(true);
       
-      // Refresh orders list
       fetchOrders();
 
     } catch (error) {
@@ -167,7 +166,6 @@ const Pedidos = () => {
 
   const handleUpdateOrder = async () => {
     try {
-      // Validate form
       if (!validateOrder(newOrder)) {
         return;
       }
@@ -211,7 +209,6 @@ const Pedidos = () => {
       setSnackbarType("success");
       setSnackbarOpen(true);
       
-      // Refresh orders list
       fetchOrders();
 
     } catch (error) {
@@ -295,6 +292,84 @@ const Pedidos = () => {
     setIsCreateModalOpen(true);
   };
 
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Add company logo or name
+    doc.setFontSize(20);
+    doc.setTextColor(97, 87, 187); // Purple color matching the UI
+    doc.text("Order Receipt", pageWidth/2, 20, { align: "center" });
+    
+    // Add border line
+    doc.setDrawColor(97, 87, 187);
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, pageWidth - 20, 25);
+    
+    // Order information
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Order ID: #${orderDetails.id}`, 20, 40);
+    doc.text(`Date: ${new Date(orderDetails.createdAt).toLocaleString()}`, 20, 50);
+    doc.text(`Status: ${orderDetails.status}`, 20, 60);
+    doc.text(`Customer: ${orderDetails.customerEmail}`, 20, 70);
+    doc.text(`Payment Method: ${orderDetails.paymentMethod}`, 20, 80);
+    
+    // Items table
+    let yPos = 100;
+    doc.setFontSize(14);
+    doc.setTextColor(97, 87, 187);
+    doc.text("Order Details", pageWidth/2, yPos, { align: "center" });
+    yPos += 10;
+    
+    // Table headers
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'bold');
+    doc.text("Product ID", 20, yPos);
+    doc.text("SKU", 70, yPos);
+    doc.text("Quantity", 120, yPos);
+    doc.text("Price", 160, yPos);
+    doc.text("Total", 190, yPos);
+    yPos += 5;
+    
+    // Line under headers
+    doc.line(20, yPos, pageWidth - 20, yPos);
+    yPos += 10;
+    
+    // Table content
+    doc.setFont(undefined, 'normal');
+    orderDetails.items.forEach(item => {
+      const itemTotal = item.quantity * item.price;
+      doc.text(item.productId.toString(), 20, yPos);
+      doc.text(item.sku || "N/A", 70, yPos);
+      doc.text(item.quantity.toString(), 120, yPos);
+      doc.text(`$${item.price.toFixed(2)}`, 160, yPos);
+      doc.text(`$${itemTotal.toFixed(2)}`, 190, yPos);
+      yPos += 10;
+    });
+    
+    // Total line
+    yPos += 5;
+    doc.line(20, yPos, pageWidth - 20, yPos);
+    yPos += 10;
+    
+    // Total amount
+    doc.setFont(undefined, 'bold');
+    doc.text("Total Amount:", 150, yPos);
+    doc.text(`$${orderDetails.totalAmount.toFixed(2)}`, 190, yPos);
+    
+    // Footer
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(128, 128, 128);
+    yPos = doc.internal.pageSize.getHeight() - 20;
+    doc.text("Thank you for your purchase!", pageWidth/2, yPos, { align: "center" });
+    
+    // Save the PDF
+    doc.save(`order-${orderDetails.id}-receipt.pdf`);
+  };
+
   const renderCreateModal = () => (
     <Modal open={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
       <Paper sx={{
@@ -321,7 +396,6 @@ const Pedidos = () => {
         )}
 
         <Grid container spacing={2}>
-          {/* Customer Email */}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -332,7 +406,6 @@ const Pedidos = () => {
             />
           </Grid>
 
-          {/* Payment Method */}
           <Grid item xs={12}>
             <FormControl fullWidth>
               <InputLabel>Payment Method</InputLabel>
@@ -348,7 +421,6 @@ const Pedidos = () => {
             </FormControl>
           </Grid>
 
-          {/* Items */}
           <Grid item xs={12}>
             <Typography variant="subtitle1" sx={{ mb: 2 }}>
               Items
@@ -418,14 +490,12 @@ const Pedidos = () => {
             </Button>
           </Grid>
 
-          {/* Total Amount (calculated) */}
           <Grid item xs={12}>
             <Typography variant="subtitle1">
               Total Amount: ${calculateTotalAmount(newOrder.items).toFixed(2)}
             </Typography>
           </Grid>
 
-          {/* Action Buttons */}
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Button
@@ -507,7 +577,21 @@ const Pedidos = () => {
           </Grid>
         )}
   
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+          {orderDetails && orderDetails.status === "CONFIRMED" && (
+            <Button 
+              variant="contained" 
+              color="primary"
+              startIcon={<PictureAsPdfIcon />}
+              onClick={generatePDF}
+              sx={{
+                backgroundColor: "#6157bb",
+                "&:hover": { backgroundColor: "#8889b1" },
+              }}
+            >
+              Download Receipt
+            </Button>
+          )}
           <Button variant="outlined" onClick={() => setIsDetailsModalOpen(false)}>
             Close
           </Button>
@@ -528,7 +612,7 @@ const Pedidos = () => {
           color="primary"
           onClick={() => {
             setIsCreateModalOpen(true);
-            setEditingOrder(null); // Reset editing order
+            setEditingOrder(null);
           }}
           sx={{
             backgroundColor: "#6157bb",
@@ -578,11 +662,11 @@ const Pedidos = () => {
                     </TableCell>
                     <TableCell>
                       <EditIcon 
-                        sx={{ cursor: 'pointer', color: "#9754e4" }}
+                        sx={{ cursor: 'pointer', color: "#9754e4", marginRight: "8px" }}
                         onClick={() => handleEditOrder(order)}
                       />
                       <DeleteIcon 
-                        sx={{ cursor: 'pointer', color: "#9754e4" }}
+                        sx={{ cursor: 'pointer', color: "#9754e4", marginRight: "8px" }}
                         onClick={() => handleRemoveOrder(order.id)}
                       />
                       <InfoIcon 
