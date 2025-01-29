@@ -9,7 +9,7 @@ import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
-import sideImage from "@img/background.svg";
+import sideImage from "@img/Wavy_Bus-39_Single-07-Photoroom.png";
 import planinLogo from "@img/welcome_5069460.png";
 
 const Login = () => {
@@ -44,14 +44,14 @@ const Login = () => {
       }}
       disableGutters
     >
-      <Grid container spacing={3}>
+      <Grid container spacing={5}>
         <Grid item xs={12} md={7}>
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "100%",
+              height: "110%",
               width: "100%",
             }}
           >
@@ -59,7 +59,7 @@ const Login = () => {
               src={sideImage}
               alt="Imagem Lateral"
               style={{
-                maxWidth: "110%",
+                maxWidth: "90%",
                 maxHeight: "100%",
                 marginLeft: "-15rem",
               }}
@@ -83,7 +83,7 @@ const Login = () => {
               alt="Logo"
               sx={{
                 width: "50%",
-                marginTop: "5rem",
+                marginTop: "2rem",
                 maxWidth: 920,
               }}
             />
@@ -103,7 +103,7 @@ const Login = () => {
                 variant="outlined"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                style={{ marginBottom: "0.5rem", width: "100%" }}
+                style={{ marginBottom: "0.5rem", width: "100%", marginTop: "5rem" }}
               />
               <TextField
                 label="Password"
@@ -145,7 +145,7 @@ const Login = () => {
                 marginTop="-15rem"
                 variant="h5"
                 style={{
-                  color: "#6357f1",
+                  color: "#9f3ecc",
                   fontWeight: "bold",
                   textAlign: "center",
                   whiteSpace: "nowrap",

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import Logo from "@img/store-logo-menu.png";
+import Logo from "@img/welcome_5069460.png";
 import products from "@img/produtos.png";
 import clients from "@img/privacidade.png";
 import orders from "@img/box_6452366.png";
@@ -32,7 +32,7 @@ const MenuItem = ({ to, icon, label }) => {
         textDecoration: "none",
         transition: "transform 0.3s ease-in-out, color 0.3s",
         transform: isHovered ? "scale(1.15)" : "scale(1)",
-        color: isHovered ? "#000" : "#6357F1",
+        color: isHovered ? "#000" : "#9f3ecc",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

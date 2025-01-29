@@ -81,7 +81,7 @@ const Clientes = () => {
                     backgroundColor: "#edecf5",
                     transition: "transform 0.3s ease-in-out",
                     transform: indiceHovered === index ? "scale(1.15)" : "scale(1)",
-                    color: "#6357F1",
+                    color: "#9f3ecc",
                   }}
                 >
                   <TableContainer>

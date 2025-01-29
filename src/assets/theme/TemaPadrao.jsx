@@ -5,16 +5,16 @@ const TemaPadrao = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#6357F1",
+      main: "#9f3ecc",
     },
     secondary: {
-      main: "#6357ff",
+      main: "#9f3ecc",
     },
     text: {
-      hint: "#6357f1",
-      primary: "#6357ff", 
-      secondary: "#6357ff",
-      disabled: "#6357ff", 
+      hint: "#9f3ecc",
+      primary: "#9f3ecc", 
+      secondary: "#9f3ecc",
+      disabled: "#9f3ecc", 
     },
   },
   typography: {
@@ -24,18 +24,18 @@ const TemaPadrao = createTheme({
       "sans-serif",
     ].join(","),
     allVariants: {
-      color: "#6357ff",
+      color: "#9f3ecc",
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         contained: {
-          backgroundColor: "#6357F1",
+          backgroundColor: "#9f3ecc",
           color: "#fff",
         },
         outlined: {
-          color: "#6357F1",
+          color: "#9f3ecc",
         },
         root: {
           borderRadius: "20px",

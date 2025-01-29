@@ -207,7 +207,7 @@ const Product = () => {
             textAlign: "center",
             marginTop: "10rem",
             fontWeight: "bold",
-            color: "#6357F1",
+            color: "#9f3ecc",
           }}
         >
           No products available. <br /> 
@@ -233,7 +233,7 @@ const Product = () => {
                     transition:
                       "transform 0.3s ease-in-out, background-color 0.3s, color 0.3s",
                     transform: hoveredIndex === index ? "scale(1.15)" : "scale(1)",
-                    color: hoveredIndex === index ? "#000" : "#6357F1",
+                    color: hoveredIndex === index ? "#000" : "#9f3ecc",
                   }}
                 >
                   <TableContainer>
@@ -244,7 +244,7 @@ const Product = () => {
                       <TableRow onClick={() => handleRowClick(product)}>
                         <TableCell
                           style={{
-                            color: "#6357F1",
+                            color: "#9f3ecc",
                             textAlign: "center",
                           }}
                         >
