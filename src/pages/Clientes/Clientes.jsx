@@ -9,6 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
+import TextField from "@mui/material/TextField"; // Importe o TextField para o campo de filtro
 import usuarioIcone from "@img/usuario-icone.png"; // Ícone de usuário
 
 const Clientes = () => {
@@ -17,6 +18,7 @@ const Clientes = () => {
   const [isModalDetalhesAberto, setIsModalDetalhesAberto] = useState(false);
   const [isCarregando, setIsCarregando] = useState(true);
   const [indiceHovered, setIndiceHovered] = useState(null);
+  const [filtroEmail, setFiltroEmail] = useState(""); // Estado para armazenar o valor do filtro
 
   useEffect(() => {
     const buscarOrders = async () => {
@@ -43,10 +45,29 @@ const Clientes = () => {
     setIsModalDetalhesAberto(false);
   };
 
+  // Função para filtrar os pedidos com base no email
+  const filtrarPedidosPorEmail = (orders, filtroEmail) => {
+    return orders.filter((order) =>
+      order.customerEmail.toLowerCase().includes(filtroEmail.toLowerCase())
+    );
+  };
+
+  const pedidosFiltrados = filtrarPedidosPorEmail(orders, filtroEmail);
+
   return (
     <Grid container spacing={4} justifyContent="center">
       <Grid item xs={12} mt={0} ml={0}>
         <Menu />
+      </Grid>
+
+      <Grid item xs={10} ml={9}>
+        <TextField
+          label="Filter by email"
+          variant="outlined"
+          value={filtroEmail}
+          onChange={(e) => setFiltroEmail(e.target.value)}
+          style={{ width: "200px"}}
+        />
       </Grid>
 
       {isCarregando ? (
@@ -56,7 +77,7 @@ const Clientes = () => {
           </Typography>
           <CircularProgress />
         </div>
-      ) : orders.length === 0 ? (
+      ) : pedidosFiltrados.length === 0 ? (
         <div style={{ textAlign: "center", marginTop: "10rem" }}>
           <Typography variant="h5" style={{ marginBottom: "1rem", fontWeight: "bold" }}>
             Não há clientes disponíveis.
@@ -71,7 +92,7 @@ const Clientes = () => {
           }}
         >
           <Grid container spacing={5} justifyContent="center">
-            {orders.map((order, index) => (
+            {pedidosFiltrados.map((order, index) => (
               <Grid key={order.id} item xs={10} sm={6} md={4} lg={4}>
                 <Paper
                   onMouseEnter={() => setIndiceHovered(index)}
