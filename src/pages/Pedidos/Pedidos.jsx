@@ -48,10 +48,13 @@ const Pedidos = () => {
   const [error, setError] = useState("");
   const [orderDetails, setOrderDetails] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     fetchOrders();
+    fetchProducts(); // Add this new fetch call
   }, []);
+
 
   const fetchOrders = async () => {
     try {
@@ -60,13 +63,33 @@ const Pedidos = () => {
       setOrders(data);
       setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Erro ao buscar pedidos:", error);
+      setSnackbarMessage("Erro ao buscar pedidos");
+      setSnackbarType("error");
+      setSnackbarOpen(true);
       setIsLoading(false);
-      setSnackbarMessage("Error fetching orders");
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("http://localhost:8083/api/products");
+      const data = await response.json();
+  
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        console.error("Expected an array but got:", data);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setSnackbarMessage("Error fetching products");
       setSnackbarType("error");
       setSnackbarOpen(true);
     }
   };
+  
 
   const fetchOrderDetails = async (orderId) => {
     try {
@@ -110,7 +133,7 @@ const Pedidos = () => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const handleCreateOrder = async () => {
+ const handleCreateOrder = async () => {
     try {
       if (!validateOrder(newOrder)) {
         return;
@@ -136,7 +159,7 @@ const Pedidos = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Erro HTTP! status: ${response.status}`);
       }
 
       const createdOrder = await response.json();
@@ -150,20 +173,19 @@ const Pedidos = () => {
         items: [{ productId: "", sku: "", quantity: 1, price: 0 }]
       });
 
-      setSnackbarMessage("Order created successfully!");
+      setSnackbarMessage("Pedido criado com sucesso!");
       setSnackbarType("success");
       setSnackbarOpen(true);
       
       fetchOrders();
-
     } catch (error) {
-      console.error("Error creating order:", error);
-      setSnackbarMessage("Error creating order: " + error.message);
+      console.error("Erro ao criar pedido:", error);
+      setSnackbarMessage("Erro ao criar pedido: " + error.message);
       setSnackbarType("error");
       setSnackbarOpen(true);
     }
   };
-
+  
   const handleUpdateOrder = async () => {
     try {
       if (!validateOrder(newOrder)) {
@@ -245,23 +267,52 @@ const Pedidos = () => {
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...newOrder.items];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      [field]: value
-    };
-    
+  
+    if (field === "productId") {
+      const selectedProduct = products.find((p) => p.id === Number(value));
+      
+      if (selectedProduct) {
+        updatedItems[index] = {
+          ...updatedItems[index],
+          productId: selectedProduct.id,
+          sku: selectedProduct.sku,
+          price: selectedProduct.price, // Preço unitário do produto
+          quantity: 1, // Sempre define a quantidade como 1 ao selecionar um novo produto
+          total: selectedProduct.price, // Inicializa o preço total
+        };
+      }
+    } else if (field === "quantity") {
+      // Atualiza a quantidade e recalcula o preço total
+      const quantity = Number(value);
+      updatedItems[index] = {
+        ...updatedItems[index],
+        quantity,
+        total: updatedItems[index].price * quantity, // Multiplica o preço unitário pela quantidade
+      };
+    } else {
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [field]: value,
+      };
+    }
+  
     setNewOrder({
       ...newOrder,
-      items: updatedItems
+      items: updatedItems,
     });
   };
-
+  
   const addNewItem = () => {
     setNewOrder({
       ...newOrder,
       items: [
         ...newOrder.items,
-        { productId: "", sku: "", quantity: 1, price: 0 }
+        {
+          productId: "",
+          sku: "",
+          quantity: 1,
+          price: 0
+        }
       ]
     });
   };
@@ -427,58 +478,80 @@ const Pedidos = () => {
             </Typography>
 
             {newOrder.items.map((item, index) => (
-              <Box key={index} sx={{ mb: 3, p: 2, border: "1px solid #e0e0e0", borderRadius: 1 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="Product ID"
-                      type="number"
+            <Box key={index} sx={{ mb: 3, p: 2, border: "1px solid #e0e0e0", borderRadius: 1 }}>
+              <Grid container spacing={2}>
+                
+                {/* Seleção de Produto */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel>Produto</InputLabel>
+                    <Select
                       value={item.productId}
-                      onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="SKU"
-                      value={item.sku}
-                      onChange={(e) => handleItemChange(index, 'sku', e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="Quantity"
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="Price"
-                      type="number"
-                      value={item.price}
-                      onChange={(e) => handleItemChange(index, 'price', e.target.value)}
-                    />
-                  </Grid>
-                  {newOrder.items.length > 1 && (
-                    <Grid item xs={12}>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => removeItem(index)}
-                        size="small"
-                      >
-                        Remove Item
-                      </Button>
-                    </Grid>
-                  )}
+                      label="Produto"
+                      onChange={(e) => handleItemChange(index, "productId", e.target.value)}
+                    >
+                      {products.map((product) => (
+                        <MenuItem key={product.id} value={product.id}>
+                          {product.name} 
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
-              </Box>
-            ))}
+
+                {/* SKU (Somente Leitura) */}
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="SKU"
+                    value={item.sku}
+                    InputProps={{ readOnly: true }} // Impede edição manual
+                  />
+                </Grid>
+
+                {/* Quantidade */}
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Quantidade"
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                    inputProps={{ min: 1 }} // Garante que a quantidade mínima seja 1
+                  />
+                </Grid>
+
+              
+
+                {/* Preço Total (Calculado automaticamente) */}
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Preço Total"
+                    type="number"
+                    value={(item.price * item.quantity).toFixed(2)} // Cálculo direto no campo
+                    InputProps={{ readOnly: true }} // Impede edição manual
+                  />
+                </Grid>
+
+                {/* Remover Item */}
+                {newOrder.items.length > 1 && (
+                  <Grid item xs={12}>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => removeItem(index)}
+                      size="small"
+                    >
+                      Remover Item
+                    </Button>
+                  </Grid>
+                )}
+
+              </Grid>
+            </Box>
+          ))}
+
 
             <Button
               variant="outlined"
