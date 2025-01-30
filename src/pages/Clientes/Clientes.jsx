@@ -80,7 +80,8 @@ const Clientes = () => {
       ) : pedidosFiltrados.length === 0 ? (
         <div style={{ textAlign: "center", marginTop: "10rem" }}>
           <Typography variant="h5" style={{ marginBottom: "1rem", fontWeight: "bold" }}>
-            Não há clientes disponíveis.
+          There are no clients available. <br />
+          Please register a new client.
           </Typography>
         </div>
       ) : (

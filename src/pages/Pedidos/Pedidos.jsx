@@ -632,7 +632,9 @@ const Pedidos = () => {
         </Grid>
       ) : orders.length === 0 ? (
         <Grid item xs={12} sx={{ textAlign: "center" }}>
-          <Typography variant="h6">No orders found</Typography>
+      <Typography variant="h5" style={{ marginBottom: "1rem", fontWeight: "bold" }}>
+        There are no orders registered. <br/> Create a new order.
+      </Typography>
         </Grid>
       ) : (
         <Grid item xs={10.5}>

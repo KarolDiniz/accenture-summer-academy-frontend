@@ -12,10 +12,10 @@ const Home = () => {
 
       <Grid item xs={12}>
         <Typography variant="h4" align="left" gutterBottom style={{ color: "#9f3ecc", marginLeft:"5rem", marginTop:"12rem" }}>
-          Bem-vindo(a) a accenture-store
+        Welcome to Accenture Store!
         </Typography>
         <Typography variant="body1" align="left" paragraph style={{ lineHeight: 1.6, marginLeft:"5rem" }}>
-          Explore uma grande variedade de itens e gerencie pedidos online conosco.
+        Explore a wide variety of items and manage orders online with us.
         </Typography>
 
         <img
