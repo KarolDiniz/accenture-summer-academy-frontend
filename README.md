@@ -1,13 +1,13 @@
 # Desafio Técnico - Klock-store
 
-Este projeto foi desenvolvido como parte de um desafio técnico, apresentando uma aplicação web (frontend) integrada ao backend proposto no desafio em **Spring Boot**. O objetivo principal da aplicação é permitir a visualização e o gerenciamento de pedidos, itens e clientes. 
+Este projeto foi desenvolvido como parte de um desafio, apresentando uma aplicação web (frontend) integrada ao backend proposto no desafio em **Spring Boot** baseado em microservices. O objetivo principal da aplicação é permitir a visualização e o gerenciamento de pedidos, itens e clientes. 
 
 Siga as instruções abaixo para configurar e executar o projeto em seu ambiente local.
 
 ---
 
 ## 📹 Vídeo Demonstrativo  
-https://youtu.be/HC1QFjFxl-w
+
 
 ---
 
@@ -21,7 +21,7 @@ Certifique-se de que seu ambiente possui os seguintes softwares instalados:
 ### 2️⃣ Clone o repositório  
 
 ```bash
-git clone https://github.com/KarolDiniz/klock-store-front.git
+git clone https://github.com/KarolDiniz/accenture-summer-academy-frontend.git
 ```
 Ou faça o download do arquivo ZIP e extraia-o em seu computador.
 
@@ -41,11 +41,16 @@ Após a execução bem-sucedida do projeto, acesse a aplicação no seu navegado
 ## 🛠️ Funcionalidades  
 
 ### 1️⃣ Tela inicial  
-- Ao acessar a aplicação, clique em **Entrar** para ser redirecionado à página inicial (Home).
+- Ao acessar a aplicação, insira as credenciais:
+```bash
+username: admin
+password: admin
+```
+e clique em **Entrar** para ser redirecionado à página inicial (Home).
 
 ### 2️⃣ Gerenciamento de Clientes  
 - Acesse a aba **Clientes** no menu superior para visualizar a lista de clientes cadastrados.  
-- Clique em **Criar cliente** para adicionar novos clientes.
+- Clique em **Filter by email** para filtrar clientes.
 
 ### 3️⃣ Gerenciamento de Produtos/Itens  
 - Acesse a aba **Produtos** no menu superior para visualizar a lista de itens cadastrados.  
@@ -57,6 +62,8 @@ Após a execução bem-sucedida do projeto, acesse a aplicação no seu navegado
 - Acesse a aba **Pedidos** no menu superior para visualizar uma tabela com todos os pedidos cadastrados.  
 - Clique em **Criar pedido** para adicionar um novo pedido.
 
+### 5️⃣ Gerenciamento de Pedidos  
+- Acesse a aba **Chat** no menu superior para conversar com um chat a respeito do software.  
 
 ---
 
@@ -67,13 +74,16 @@ Após a execução bem-sucedida do projeto, acesse a aplicação no seu navegado
 ---
 
 ## 👩‍💻 Desenvolvido por  
-Karoline Diniz Ramos  
+Karoline Diniz
+Ellen Cassia
+Carlos Ryan
+Diogo Marcelo
 
 ---
 
 ## 🔗 Links adicionais  
 
-- **Repositório do backend**: https://github.com/KarolDiniz/klock-store-back.git
+- **Repositório do backend**: https://github.com/KarolDiniz/accenture-summer-academy-backend.git
  
 - **Tecnologias utilizadas**:  
   - **Frontend**: React, CSS, HTML  
