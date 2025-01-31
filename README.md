@@ -7,7 +7,7 @@ Siga as instruções abaixo para configurar e executar o projeto em seu ambiente
 ---
 
 ## 📹 Vídeo Demonstrativo  
-
+https://youtu.be/SNfD07ShAuM
 
 ---
 
