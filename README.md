@@ -1,4 +1,4 @@
-# Desafio Técnico - Klock-store
+# Desafio Técnico - Accenture-store
 
 Este projeto foi desenvolvido como parte de um desafio, apresentando uma aplicação web (frontend) integrada ao backend proposto no desafio em **Spring Boot** baseado em microservices. O objetivo principal da aplicação é permitir a visualização e o gerenciamento de pedidos, itens e clientes. 
 
